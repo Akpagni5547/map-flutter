@@ -1,198 +1,297 @@
 import 'package:flutter/material.dart';
-import "package:flutter_screenutil/flutter_screenutil.dart";
+import 'package:map_design/models/rondPoint.dart';
+import 'package:map_design/screens/component/rondPointBouton.dart';
 
-class RondPoint {
-  final String title;
-  final Color color;
+class MapScreen extends StatefulWidget {
+  const MapScreen({Key? key}) : super(key: key);
 
-  RondPoint({required this.title, required this.color});
+  @override
+  _MapScreenState createState() => _MapScreenState();
 }
 
-class MapScreen extends StatelessWidget {
-  const MapScreen({super.key});
+class _MapScreenState extends State<MapScreen> {
+  final TextEditingController search = TextEditingController();
+  RondPoint currentRondPoint = rondPoints[0];
+  List<RondPoint> filteredRondPoints = [];
+
+  void setCurrentRondPoint(RondPoint rondPoint) {
+    setState(() {
+      currentRondPoint = rondPoint;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    filteredRondPoints = rondPoints;
+    print(currentRondPoint.sensOuest.etatColor(currentRondPoint.sensOuest.voie[0]));
+  }
+
+  int calculateColumnCount(double screenWidth, int size) {
+    return screenWidth >= 300 ? size : 8;
+  }
+
+  void filterRondPoints(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredRondPoints = rondPoints;
+      } else {
+        filteredRondPoints = rondPoints.where((rondPoint) {
+          return rondPoint.nom.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      }
+    });
+  }
+
+  Widget buildTopSection() {
+    return Container(
+      height: 370,
+      width: 370,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          //image: AssetImage("assets/images/ndokoti.png"),
+          //image: AssetImage("assets/images/routeFinalGoogle1.png"),
+          image: AssetImage("assets/images/routeFinalGoogle2.png"),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: buildImagesForSides(),
+    );
+  }
+
+  Widget buildImagesForSides() {
+    return  Stack(children: [
+                  //ouest
+                Positioned(
+                child: Image.asset("assets/images/BVG.png",),
+                ),
+                 Positioned(
+                child: Image.asset("assets/images/BRG2.png",),
+                ),
+                Positioned(
+                child: Image.asset("assets/images/BVH.png",),
+                ),
+                 Positioned(
+                child: Image.asset("assets/images/BRH2.png",),
+                ),
+                Positioned(
+                child: Image.asset("assets/images/BVB.png",),
+                ),
+                 Positioned(
+                child: Image.asset("assets/images/BVB2.png",),
+                ),
+                Positioned(
+                child: Image.asset("assets/images/BOD.png",),
+                ),
+                 Positioned(
+                child: Image.asset("assets/images/BVD2.png",),
+                ),
+               /* 
+                Positioned(
+                bottom: 200,
+                right: 25,
+                child: Image.asset(currentRondPoint.sensOuest.etatColor(currentRondPoint.sensOuest.voie[0]), height: 2,),
+                ),
+                Positioned(
+                bottom: 189,
+                right: 25,
+                child: Image.asset(currentRondPoint.sensOuest.etatColor(currentRondPoint.sensOuest.voie[1]), height: 2),
+                ),
+                Positioned(
+                bottom: 177,
+                right: 25,
+                child: Image.asset(currentRondPoint.sensOuest.etatColor(currentRondPoint.sensOuest.voie[2]), height: 2),
+                ),
+                Positioned(
+                bottom: 166,
+                right: 25,
+                child: Image.asset(currentRondPoint.sensOuest.etatColor(currentRondPoint.sensOuest.voie[3]), height: 2),
+                ),
+                //est
+                Positioned(
+                bottom: 200,
+                left: 20,
+                child: Image.asset(currentRondPoint.sensEst.etatColor(currentRondPoint.sensEst.voie[0]), height: 2),
+                ),
+                Positioned(
+                bottom: 189,
+                left: 20,
+                child: Image.asset(currentRondPoint.sensEst.etatColor(currentRondPoint.sensEst.voie[1]), height: 2),
+                ),
+                Positioned(
+                bottom: 177,
+                left: 20,
+                child: Image.asset(currentRondPoint.sensEst.etatColor(currentRondPoint.sensEst.voie[2]), height: 2),
+                ),
+                Positioned(
+                bottom: 166,
+                left: 20,
+                child: Image.asset(currentRondPoint.sensEst.etatColor(currentRondPoint.sensEst.voie[3]), height: 2),
+                ),
+
+                //sud
+                Positioned(
+                left: 162,
+                top: 9,
+                child: Image.asset(currentRondPoint.sensSud.etatColor(currentRondPoint.sensSud.voie[0]), height: 110),
+                ),
+                Positioned(
+                left: 173,
+                top: 9,
+                child: Image.asset(currentRondPoint.sensSud.etatColor(currentRondPoint.sensSud.voie[1]), height: 110),
+                ),
+                Positioned(
+                left: 196,
+                top: 9,
+                child: Image.asset(currentRondPoint.sensSud.etatColor(currentRondPoint.sensSud.voie[2]), height: 110),
+                ),
+                Positioned(
+                left: 185,
+                top: 9,
+                child: Image.asset(currentRondPoint.sensSud.etatColor(currentRondPoint.sensSud.voie[3]), height: 110),
+                ),
+                //nord
+                Positioned(
+                left: 162,
+                bottom: 9,
+                child: Image.asset(currentRondPoint.sensNord.etatColor(currentRondPoint.sensNord.voie[0]), height: 110),
+                ),
+                Positioned(
+                left: 173,
+                bottom: 9,
+                child: Image.asset(currentRondPoint.sensNord.etatColor(currentRondPoint.sensNord.voie[1]), height: 110),
+                ),
+                Positioned(
+                left: 196,
+                bottom: 9,
+                child: Image.asset(currentRondPoint.sensNord.etatColor(currentRondPoint.sensNord.voie[2]), height: 110),
+                ),
+                Positioned(
+                left: 185,
+                bottom: 9,
+                child: Image.asset(currentRondPoint.sensNord.etatColor(currentRondPoint.sensNord.voie[3]), height: 110),
+                ), */
+          ]);       
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<RondPoint> rondPoint = [
-      RondPoint(color: const Color(0XFFf8342d), title: 'NDOKOTI'),
-      RondPoint(color: const Color(0XFFf8342d), title: 'DEIDO'),
-      RondPoint(color: const Color(0XFFf8342d), title: 'AKWA'),
-      RondPoint(color: const Color(0XFF197138), title: 'BONADJO'),
-      RondPoint(color: const Color(0XFF197138), title: 'NEW BELL'),
-      RondPoint(color: const Color(0XFFfa914e), title: 'YASSA'),
-      RondPoint(color: const Color(0XFF197138), title: 'PK 14'),
-      RondPoint(color: const Color(0XFFfa914e), title: 'BONAPRIS O'),
-      RondPoint(color: const Color(0XFFfa914e), title: "BONA'SADDI"),
-      RondPoint(color: const Color(0XFF197138), title: 'DJOSS'),
-      RondPoint(color: const Color(0XFFf8342d), title: 'BONANBERI'),
-      RondPoint(color: const Color(0XFF197138), title: 'BONABERI'),
-      RondPoint(color: const Color(0XFFf8342d), title: 'ELF'),
-      RondPoint(color: const Color(0XFF197138), title: 'LOGPOM'),
-      RondPoint(color: const Color(0XFF197138), title: 'NYALLA'),
-      RondPoint(color: const Color(0XFFfa914e), title: 'JAPOMA'),
-    ];
     return Scaffold(
-      body: Stack(
-        // alignment: Alignment.bottomCenter,
+      body: Column(
         children: [
-          SizedBox(
-            height: 1.sh,
-          ),
-          Image.asset('assets/images/map.png'),
-          Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
+          buildTopSection(),
+          Expanded(
+            child: Container(
+              color: Colors.white,
               child: Stack(
-                alignment: Alignment.bottomCenter,
                 children: [
-                  SizedBox(
-                    height: 385.h,
-                  ),
                   Container(
-                    padding:
-                        EdgeInsets.only(left: 20.w, right: 20.w, bottom: 15.h),
-                    height: 350.h,
-                    decoration: BoxDecoration(
-                        color: const Color(0XFF31be62),
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(15.r),
-                            topRight: Radius.circular(15.r))),
+                    margin: EdgeInsets.only(top: 37),
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Color(0XFF31be62),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
+                      ),
+                    ),
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 30.h,
+                        Container(
+                          height: 40,
                         ),
                         Expanded(
+                          child: Container(
                             child: GridView.builder(
-                                itemCount: rondPoint.length,
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 4,
-                                        crossAxisSpacing: 20.0,
-                                        mainAxisSpacing: 13.0,
-                                        childAspectRatio: 1.2),
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 5.w, vertical: 6.h),
-                                    decoration: BoxDecoration(
-                                        color: rondPoint[index].color,
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15.r))),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          rondPoint[index].title == "DJOSS"
-                                              ? "ECHANGEUR"
-                                          : rondPoint[index].title == "BONANBERI"
-                                              ? "ENTREE OUEST"
-                                              : rondPoint[index].title == "BONABERI"
-                                              ? "ENTREE EST"
-                                              : 'ROND POINT',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: rondPoint[index].title == "BONANBERI" ? 6.sp : 7.5.sp,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(
-                                          height: 1.h,
-                                        ),
-                                        Text(
-                                          rondPoint[index].title,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: rondPoint[index].title == "BONANBERI" ? 8.7.sp : 9.sp,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }))
+                              itemCount: calculateColumnCount(
+                                MediaQuery.of(context).size.width,
+                                filteredRondPoints.length,
+                              ),
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4,
+                                childAspectRatio: 1.2,
+                              ),
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    setCurrentRondPoint(filteredRondPoints[index]);
+                                  },
+                                  child: RoundPointBouton(
+                                    rondPoint: filteredRondPoints[index],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w),
-                      child: Container(
-                        height: 80.h,
-                        width: double.maxFinite,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15.r))),
-                        child: Column(
-                          children: [
-                            Expanded(
-                                flex: 6,
-                                child: Container(
-                                  height: double.maxFinite,
-                                  width: double.maxFinite,
-                                  decoration: BoxDecoration(
-                                      color: const Color(0XFF19703a),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.r))),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'ROND POINT NDOPKOTI',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 24.sp),
-                                      )
-                                    ],
-                                  ),
-                                )),
-                            Expanded(
-                                flex: 5,
-                                child: Container(
-                                  height: double.maxFinite,
-                                  width: double.maxFinite,
-                                  decoration: BoxDecoration(
+                  Padding(
+                    padding: EdgeInsets.only(left: 22, right: 22),
+                    child: Container(
+                      height: 80,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: Container(
+                              height: double.infinity,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: currentRondPoint.getColorForEtat(),
+                                borderRadius: BorderRadius.all(Radius.circular(15)),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    currentRondPoint.type +" "+ currentRondPoint.nom,
+                                    style: TextStyle(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.r))),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 10.w,
-                                      ),
-                                      const Icon(
-                                        Icons.search_rounded,
-                                        color: Colors.black,
-                                        size: 35,
-                                      ),
-                                      SizedBox(
-                                        width: 15.w,
-                                      ),
-                                      Text(
-                                        'RECHERCHER UN ROND POINT',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 15.sp),
-                                      )
-                                    ],
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 20,
+                                    ),
                                   ),
-                                )),
-                          ],
-                        ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 5,
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'RECHERCHER UN ROND POINT?',
+                                prefixIcon: const Icon(Icons.search),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 1.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                              ),
+                              controller: search,
+                              onChanged: (value) {
+                                filterRondPoints(value);
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
-              ))
+              ),
+            ),
+          ),
         ],
       ),
     );
